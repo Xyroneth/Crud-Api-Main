@@ -35,7 +35,7 @@ jobs:
       - name: Test Python client
         working-directory: python-client
         run: python -m unittest discover -s tests -v
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: coverage-and-build
           path: |
