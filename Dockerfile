@@ -1,4 +1,4 @@
-FROM node:22-alpine AS dependencies
+FROM node:26-alpine AS dependencies
 WORKDIR /app
 COPY package*.json ./
 RUN if [ -f package-lock.json ]; then HUSKY=0 npm ci; else HUSKY=0 npm install --no-audit --no-fund; fi
@@ -9,7 +9,7 @@ COPY src ./src
 COPY scripts ./scripts
 RUN npm run build && npm prune --omit=dev
 
-FROM node:22-alpine AS runtime
+FROM node:26-alpine AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 RUN addgroup -S app && adduser -S app -G app
