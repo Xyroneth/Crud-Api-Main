@@ -1,0 +1,45 @@
+services:
+  frontend:
+    build: ./frontend
+    image: task-manager-frontend:local
+    ports:
+      - '8080:80'
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+  api:
+    build: .
+    image: task-manager-api:local
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://mongo:27017/task-manager
+    ports:
+      - '3000:3000'
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+  mongo-express:
+    image: mongo-express:1.0.2
+    profiles: ['tools']
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
+      ME_CONFIG_BASICAUTH_ENABLED: 'false'
+    ports:
+      - '8081:8081'
+    depends_on: [mongo]
+
+volumes:
+  mongo-data:

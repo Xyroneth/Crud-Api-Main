@@ -1,0 +1,45 @@
+name: CI
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      HUSKY: 0
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run coverage
+      - run: npm run build
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Lint frontend
+        working-directory: frontend
+        run: npm run lint
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+      - name: Test Python client
+        working-directory: python-client
+        run: python -m unittest discover -s tests -v
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-and-build
+          path: |
+            coverage/
+            dist/
+            frontend/dist/
+      - run: docker build -t task-manager-api:${{ github.sha }} .

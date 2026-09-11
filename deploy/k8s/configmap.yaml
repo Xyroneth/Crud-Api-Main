@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-manager-api
+  namespace: task-manager
+data:
+  NODE_ENV: production
+  PORT: '3000'
+  MONGODB_URI: mongodb://mongo:27017/task-manager

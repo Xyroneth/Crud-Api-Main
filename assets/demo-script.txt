@@ -1,0 +1,1 @@
+Start services; open Swagger; run CRUD; show an invalid request; show health, metrics, coverage, and deployment files.

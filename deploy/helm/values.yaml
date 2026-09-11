@@ -1,0 +1,12 @@
+replicaCount: 2
+image:
+  repository: ghcr.io/OWNER/task-manager-api
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  port: 80
+mongoUri: mongodb://mongo:27017/task-manager
+resources:
+  requests: { cpu: 100m, memory: 128Mi }
+  limits: { cpu: 500m, memory: 512Mi }

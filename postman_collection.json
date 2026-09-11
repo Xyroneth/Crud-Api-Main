@@ -1,0 +1,58 @@
+{
+  "info": {
+    "name": "Task Manager API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "taskId", "value": "" }
+  ],
+  "item": [
+    { "name": "Health", "request": { "method": "GET", "url": "{{baseUrl}}/health" } },
+    { "name": "Easter egg", "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/egg" } },
+    {
+      "name": "Create task",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": ["pm.collectionVariables.set('taskId', pm.response.json().data._id);"]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Ship production API\",\n  \"priority\": \"high\",\n  \"status\": \"todo\"\n}"
+        },
+        "url": "{{baseUrl}}/api/v1/tasks"
+      }
+    },
+    {
+      "name": "List tasks",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/tasks?page=1&limit=20&sort=-createdAt"
+      }
+    },
+    {
+      "name": "Get task",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/tasks/{{taskId}}" }
+    },
+    {
+      "name": "Patch task",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"status\":\"done\"}" },
+        "url": "{{baseUrl}}/api/v1/tasks/{{taskId}}"
+      }
+    },
+    {
+      "name": "Delete task",
+      "request": { "method": "DELETE", "url": "{{baseUrl}}/api/v1/tasks/{{taskId}}" }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "task-manager-api.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: { app.kubernetes.io/name: {{ include "task-manager-api.name" . }} }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: {{ include "task-manager-api.name" . }} }
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports: [{ name: http, containerPort: 3000 }]
+          env:
+            - { name: NODE_ENV, value: production }
+            - { name: MONGODB_URI, value: {{ .Values.mongoUri | quote }} }
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          readinessProbe: { httpGet: { path: /health, port: http } }
+          livenessProbe: { httpGet: { path: /health, port: http } }
